@@ -1,0 +1,21 @@
+This package contains Matlab and R implementations of the algorithms proposed in "Kernelized Bayesian Matrix Factorization", which is appearing in TPAMI and ICML 2013.
+
+demo.m performs regression on the toy data set described in the manuscripts.
+demo.R performs regression on the toy data set described in the manuscripts.
+
+KBMF methods
+------------
+* kbmf_classification_train.m => training procedure for classification in Matlab
+* kbmf_classification_test.m => test procedure for classification in Matlab
+* kbmf_classification_train.R => training procedure for classification in R
+* kbmf_classification_test.R => test procedure for classification in R
+* kbmf_regression_train.m => training procedure for regression in Matlab
+* kbmf_regression_test.m => test procedure for regression in Matlab
+* kbmf_regression_train.R => training procedure for regression in R
+* kbmf_regression_test.R => test procedure for regression in R
+
+If you use any of the algorithms implemented in the package, please cite one of the following papers:
+
+Mehmet Gonen and Samuel Kaski. Kernelized Bayesian Matrix Factorization. IEEE Transactions on Pattern Analysis and Machine Intelligence, to appear.
+
+Mehmet Gonen, Suleiman A. Khan, and Samuel Kaski. Kernelized Bayesian Matrix Factorization. Proceedings of the 30th International Conference on Machine Learning (ICML 2013), Atlanta, Georgia, USA, 2013.
