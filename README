@@ -16,6 +16,6 @@ KBMF methods
 
 If you use any of the algorithms implemented in the package, please cite one of the following papers:
 
-Mehmet Gonen and Samuel Kaski. Kernelized Bayesian Matrix Factorization. IEEE Transactions on Pattern Analysis and Machine Intelligence, to appear.
+Mehmet Gonen and Samuel Kaski. Kernelized Bayesian Matrix Factorization. IEEE Transactions on Pattern Analysis and Machine Intelligence, 36(10):2047-2060, 2014.
 
 Mehmet Gonen, Suleiman A. Khan, and Samuel Kaski. Kernelized Bayesian Matrix Factorization. Proceedings of the 30th International Conference on Machine Learning (ICML 2013), Atlanta, Georgia, USA, 2013.
