@@ -12,7 +12,7 @@ kbmf_regression_train <- function(Kx, Kz, Y, R, varargin) {
   source_directory("kbmf1mkl1mkl")
   Px <- dim(Kx)[3]
   Pz <- dim(Kz)[3]
-  is_supervised <- all(!is.nan(Y))
+  is_supervised <- all(!is.na(Y))
 
   parameters <- list()
   parameters$alpha_lambda <- 1
