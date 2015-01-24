@@ -45,8 +45,8 @@ kbmf1k1mkl_semisupervised_regression_variational_train <- function(Kx, Kz, Y, pa
     # update Gx
     for (i in 1:Nx) {
       indices <- which(is.na(Y[i,]) == FALSE)
-      Gx$covariance[,,i] <- chol2inv(chol(diag(1 / sigmag^2, R, R) + (tcrossprod(Hz$mean[,indices], Hz$mean[,indices]) + apply(Hz$covariance[,,indices], 1:2, sum)) / sigmay^2))
-      Gx$mean[,i] <- Gx$covariance[,,i] %*% (crossprod(Ax$mean, Kx[,i]) / sigmag^2 + tcrossprod(Hz$mean[,indices], Y[i, indices, drop = FALSE]) / sigmay^2)
+      Gx$covariance[,,i] <- chol2inv(chol(diag(1 / sigmag^2, R, R) + (tcrossprod(Hz$mean[,indices, drop = FALSE], Hz$mean[,indices, drop = FALSE]) + apply(Hz$covariance[,,indices, drop = FALSE], 1:2, sum)) / sigmay^2))
+      Gx$mean[,i] <- Gx$covariance[,,i] %*% (crossprod(Ax$mean, Kx[,i]) / sigmag^2 + tcrossprod(Hz$mean[,indices, drop = FALSE], Y[i, indices, drop = FALSE]) / sigmay^2)
     }
 
     # update Lambdaz
@@ -84,8 +84,8 @@ kbmf1k1mkl_semisupervised_regression_variational_train <- function(Kx, Kz, Y, pa
     # update Hz
     for (j in 1:Nz) {
       indices <- which(is.na(Y[,j]) == FALSE)
-      Hz$covariance[,,j] <- chol2inv(chol(diag(1 / sigmah^2, R, R) + (tcrossprod(Gx$mean[,indices], Gx$mean[,indices]) + apply(Gx$covariance[,,indices], 1:2, sum)) / sigmay^2))
-      Hz$mean[,j] <- Gx$mean[,indices] %*% Y[indices, j] / sigmay^2
+      Hz$covariance[,,j] <- chol2inv(chol(diag(1 / sigmah^2, R, R) + (tcrossprod(Gx$mean[,indices, drop = FALSE], Gx$mean[,indices, drop = FALSE]) + apply(Gx$covariance[,,indices, drop = FALSE], 1:2, sum)) / sigmay^2))
+      Hz$mean[,j] <- Gx$mean[,indices, drop = FALSE] %*% Y[indices, j, drop = FALSE] / sigmay^2
       for (n in 1:Pz) {
         Hz$mean[,j] <- Hz$mean[,j] + ez$mean[n] * Gz$mean[,j,n] / sigmah^2
       }

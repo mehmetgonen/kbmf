@@ -82,8 +82,8 @@ kbmf1mkl1mkl_semisupervised_classification_variational_train <- function(Kx, Kz,
     # update Hx
     for (i in 1:Nx) {
       indices <- which(is.na(Y[i,]) == FALSE)
-      Hx$covariance[,,i] <- chol2inv(chol(diag(1 / sigmah^2, R, R) + tcrossprod(Hz$mean[,indices], Hz$mean[,indices]) + apply(Hz$covariance[,,indices], 1:2, sum)))
-      Hx$mean[,i] <- tcrossprod(Hz$mean[,indices], F$mean[i, indices, drop = FALSE])
+      Hx$covariance[,,i] <- chol2inv(chol(diag(1 / sigmah^2, R, R) + tcrossprod(Hz$mean[,indices, drop = FALSE], Hz$mean[,indices, drop = FALSE]) + apply(Hz$covariance[,,indices, drop = FALSE], 1:2, sum)))
+      Hx$mean[,i] <- tcrossprod(Hz$mean[,indices, drop = FALSE], F$mean[i, indices, drop = FALSE])
       for (m in 1:Px) {
         Hx$mean[,i] <- Hx$mean[,i] + ex$mean[m] * Gx$mean[,i,m] / sigmah^2
       }
@@ -125,8 +125,8 @@ kbmf1mkl1mkl_semisupervised_classification_variational_train <- function(Kx, Kz,
     # update Hz
     for (j in 1:Nz) {
       indices <- which(is.na(Y[,j]) == FALSE)
-      Hz$covariance[,,j] <- chol2inv(chol(diag(1 / sigmah^2, R, R) + tcrossprod(Hx$mean[,indices], Hx$mean[,indices]) + apply(Hx$covariance[,,indices], 1:2, sum)))
-      Hz$mean[,j] <- Hx$mean[,indices] %*% F$mean[indices, j]
+      Hz$covariance[,,j] <- chol2inv(chol(diag(1 / sigmah^2, R, R) + tcrossprod(Hx$mean[,indices, drop = FALSE], Hx$mean[,indices, drop = FALSE]) + apply(Hx$covariance[,,indices, drop = FALSE], 1:2, sum)))
+      Hz$mean[,j] <- Hx$mean[,indices, drop = FALSE] %*% F$mean[indices, j, drop = FALSE]
       for (n in 1:Pz) {
         Hz$mean[,j] <- Hz$mean[,j] + ez$mean[n] * Gz$mean[,j,n] / sigmah^2
       }

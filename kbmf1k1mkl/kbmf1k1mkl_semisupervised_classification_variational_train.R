@@ -51,8 +51,8 @@ kbmf1k1mkl_semisupervised_classification_variational_train <- function(Kx, Kz, Y
     # update Gx
     for (i in 1:Nx) {
       indices <- which(is.na(Y[i,]) == FALSE)
-      Gx$covariance[,,i] <- chol2inv(chol(diag(1 / sigmag^2, R, R) + tcrossprod(Hz$mean[,indices], Hz$mean[,indices]) + apply(Hz$covariance[,,indices], 1:2, sum)))
-      Gx$mean[,i] <- Gx$covariance[,,i] %*% (crossprod(Ax$mean, Kx[,i]) / sigmag^2 + tcrossprod(Hz$mean[,indices], F$mean[i, indices, drop = FALSE]))
+      Gx$covariance[,,i] <- chol2inv(chol(diag(1 / sigmag^2, R, R) + tcrossprod(Hz$mean[,indices, drop = FALSE], Hz$mean[,indices, drop = FALSE]) + apply(Hz$covariance[,,indices, drop = FALSE], 1:2, sum)))
+      Gx$mean[,i] <- Gx$covariance[,,i] %*% (crossprod(Ax$mean, Kx[,i]) / sigmag^2 + tcrossprod(Hz$mean[,indices, drop = FALSE], F$mean[i, indices, drop = FALSE]))
     }
 
     # update Lambdaz
@@ -90,8 +90,8 @@ kbmf1k1mkl_semisupervised_classification_variational_train <- function(Kx, Kz, Y
     # update Hz
     for (j in 1:Nz) {
       indices <- which(is.na(Y[,j]) == FALSE)
-      Hz$covariance[,,j] <- chol2inv(chol(diag(1 / sigmah^2, R, R) + tcrossprod(Gx$mean[,indices], Gx$mean[,indices]) + apply(Gx$covariance[,,indices], 1:2, sum)))
-      Hz$mean[,j] <- Gx$mean[,indices] %*% F$mean[indices, j]
+      Hz$covariance[,,j] <- chol2inv(chol(diag(1 / sigmah^2, R, R) + tcrossprod(Gx$mean[,indices, drop = FALSE], Gx$mean[,indices, drop = FALSE]) + apply(Gx$covariance[,,indices, drop = FALSE], 1:2, sum)))
+      Hz$mean[,j] <- Gx$mean[,indices, drop = FALSE] %*% F$mean[indices, j, drop = FALSE]
       for (n in 1:Pz) {
         Hz$mean[,j] <- Hz$mean[,j] + ez$mean[n] * Gz$mean[,j,n] / sigmah^2
       }
