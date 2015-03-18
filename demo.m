@@ -23,7 +23,7 @@ end
 state = kbmf_regression_train(Kx, Kz, Y, 5);
 prediction = kbmf_regression_test(Kx, Kz, state);
 
-fprintf(1, 'RMSE = %.4f\n', sqrt(mean(mean((prediction.Y.mean - Y).^2))));
+fprintf(1, 'RMSE = %.4f\n', sqrt(mean(mean((prediction.Y.mu - Y).^2))));
 
 figure;
 set(gca, 'FontSize', 24);
@@ -32,7 +32,7 @@ set(gca, 'XTick', []); set(gca, 'YTick', []); title('target outputs');
 
 figure;
 set(gca, 'FontSize', 24);
-imagesc(prediction.Y.mean, [-9, +9]); colorbar; set(gca, 'FontSize', 24);
+imagesc(prediction.Y.mu, [-9, +9]); colorbar; set(gca, 'FontSize', 24);
 set(gca, 'XTick', []); set(gca, 'YTick', []); title('predicted outputs');
 
 figure;
@@ -45,7 +45,7 @@ set(gca, 'XTick', 1:1:Px);
 set(gca, 'XTickLabel', 1:1:Px);
 set(gca, 'YTick', -0.25:0.25:0.75);
 set(gca, 'YTickLabel', {'-0.25', '0.00', '0.25', '0.50', '0.75'});
-bar(state.ex.mean);
+bar(state.ex.mu);
 subplot(2, 1, 2); hold on; box on;
 set(gca, 'FontSize', 24);
 title('kernel weights on Z');
@@ -55,4 +55,4 @@ set(gca, 'XTick', 1:1:Pz);
 set(gca, 'XTickLabel', 1:1:Pz);
 set(gca, 'YTick', -0.25:0.25:0.75);
 set(gca, 'YTickLabel', {'-0.25', '0.00', '0.25', '0.50', '0.75'});
-bar(state.ez.mean);
+bar(state.ez.mu);

@@ -9,22 +9,22 @@ function state = kbmf1k1k_supervised_regression_variational_train(Kx, Kz, Y, par
     Dz = size(Kz, 1);
     Nz = size(Kz, 2);
     R = parameters.R;
-    sigmag = parameters.sigmag;
-    sigmay = parameters.sigmay;
+    sigma_g = parameters.sigma_g;
+    sigma_y = parameters.sigma_y;
 
-    Lambdax.shape = (parameters.alpha_lambda + 0.5) * ones(Dx, R);
-    Lambdax.scale = parameters.beta_lambda * ones(Dx, R);
-    Ax.mean = randn(Dx, R);
-    Ax.covariance = repmat(eye(Dx, Dx), [1, 1, R]);
-    Gx.mean = randn(R, Nx);
-    Gx.covariance = eye(R, R);
+    Lambdax.alpha = (parameters.alpha_lambda + 0.5) * ones(Dx, R);
+    Lambdax.beta = parameters.beta_lambda * ones(Dx, R);
+    Ax.mu = randn(Dx, R);
+    Ax.sigma = repmat(eye(Dx, Dx), [1, 1, R]);
+    Gx.mu = randn(R, Nx);
+    Gx.sigma = eye(R, R);
 
-    Lambdaz.shape = (parameters.alpha_lambda + 0.5) * ones(Dz, R);
-    Lambdaz.scale = parameters.beta_lambda * ones(Dz, R);
-    Az.mean = randn(Dz, R);
-    Az.covariance = repmat(eye(Dz, Dz), [1, 1, R]);
-    Gz.mean = randn(R, Nz);
-    Gz.covariance = eye(R, R);
+    Lambdaz.alpha = (parameters.alpha_lambda + 0.5) * ones(Dz, R);
+    Lambdaz.beta = parameters.beta_lambda * ones(Dz, R);
+    Az.mu = randn(Dz, R);
+    Az.sigma = repmat(eye(Dz, Dz), [1, 1, R]);
+    Gz.mu = randn(R, Nz);
+    Gz.sigma = eye(R, R);
 
     KxKx = Kx * Kx';
     KzKz = Kz * Kz';
@@ -41,26 +41,26 @@ function state = kbmf1k1k_supervised_regression_variational_train(Kx, Kz, Y, par
         end
 
         %%%% update Lambdax
-        Lambdax.scale = 1 ./ (1 / parameters.beta_lambda + 0.5 * (Ax.mean.^2 + reshape(Ax.covariance(lambdax_indices), Dx, R)));
+        Lambdax.beta = 1 ./ (1 / parameters.beta_lambda + 0.5 * (Ax.mu.^2 + reshape(Ax.sigma(lambdax_indices), Dx, R)));
         %%%% update Ax
         for s = 1:R
-            Ax.covariance(:, :, s) = (diag(Lambdax.shape(:, s) .* Lambdax.scale(:, s)) + KxKx / sigmag^2) \ eye(Dx, Dx);
-            Ax.mean(:, s) = Ax.covariance(:, :, s) * (Kx * Gx.mean(s, :)' / sigmag^2);
+            Ax.sigma(:, :, s) = (diag(Lambdax.alpha(:, s) .* Lambdax.beta(:, s)) + KxKx / sigma_g^2) \ eye(Dx, Dx);
+            Ax.mu(:, s) = Ax.sigma(:, :, s) * (Kx * Gx.mu(s, :)' / sigma_g^2);
         end
         %%%% update Gx
-        Gx.covariance = (eye(R, R) / sigmag^2 + (Gz.mean * Gz.mean' + Nz * Gz.covariance) / sigmay^2) \ eye(R, R);
-        Gx.mean = Gx.covariance * (Ax.mean' * Kx / sigmag^2 + Gz.mean * Y' / sigmay^2);
+        Gx.sigma = (eye(R, R) / sigma_g^2 + (Gz.mu * Gz.mu' + Nz * Gz.sigma) / sigma_y^2) \ eye(R, R);
+        Gx.mu = Gx.sigma * (Ax.mu' * Kx / sigma_g^2 + Gz.mu * Y' / sigma_y^2);
 
         %%%% update Lambdaz
-        Lambdaz.scale = 1 ./ (1 / parameters.beta_lambda + 0.5 * (Az.mean.^2 + reshape(Az.covariance(lambdaz_indices), Dz, R)));
+        Lambdaz.beta = 1 ./ (1 / parameters.beta_lambda + 0.5 * (Az.mu.^2 + reshape(Az.sigma(lambdaz_indices), Dz, R)));
         %%%% update Az
         for s = 1:R
-            Az.covariance(:, :, s) = (diag(Lambdaz.shape(:, s) .* Lambdaz.scale(:, s)) + KzKz / sigmag^2) \ eye(Dz, Dz);
-            Az.mean(:, s) = Az.covariance(:, :, s) * (Kz * Gz.mean(s, :)' / sigmag^2);
+            Az.sigma(:, :, s) = (diag(Lambdaz.alpha(:, s) .* Lambdaz.beta(:, s)) + KzKz / sigma_g^2) \ eye(Dz, Dz);
+            Az.mu(:, s) = Az.sigma(:, :, s) * (Kz * Gz.mu(s, :)' / sigma_g^2);
         end
         %%%% update Gz
-        Gz.covariance = (eye(R, R) / sigmag^2 + (Gx.mean * Gx.mean' + Nx * Gx.covariance) / sigmay^2) \ eye(R, R);
-        Gz.mean = Gz.covariance * (Az.mean' * Kz / sigmag^2 + Gx.mean * Y / sigmay^2);
+        Gz.sigma = (eye(R, R) / sigma_g^2 + (Gx.mu * Gx.mu' + Nx * Gx.sigma) / sigma_y^2) \ eye(R, R);
+        Gz.mu = Gz.sigma * (Az.mu' * Kz / sigma_g^2 + Gx.mu * Y / sigma_y^2);
     end
 
     state.Lambdax = Lambdax;

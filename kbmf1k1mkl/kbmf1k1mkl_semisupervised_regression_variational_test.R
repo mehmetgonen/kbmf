@@ -3,20 +3,20 @@
 kbmf1k1mkl_semisupervised_regression_variational_test <- function(Kx, Kz, state) {
   Nz <- dim(Kz)[2]
   Pz <- dim(Kz)[3]
-  R <- dim(state$Ax$mean)[2]
+  R <- dim(state$Ax$mu)[2]
 
-  Gx <- list(mean = crossprod(state$Ax$mean, Kx))
+  Gx <- list(mu = crossprod(state$Ax$mu, Kx))
 
-  Gz <- list(mean = array(0, c(R, Nz, Pz)))
+  Gz <- list(mu = array(0, c(R, Nz, Pz)))
   for (n in 1:Pz) {
-    Gz$mean[,,n] <- crossprod(state$Az$mean, Kz[,,n])
+    Gz$mu[,,n] <- crossprod(state$Az$mu, Kz[,,n])
   }
-  Hz <- list(mean = matrix(0, R, Nz))
+  Hz <- list(mu = matrix(0, R, Nz))
   for (n in 1:Pz) {
-    Hz$mean <- Hz$mean + state$ez$mean[n] * Gz$mean[,,n]
+    Hz$mu <- Hz$mu + state$ez$mu[n] * Gz$mu[,,n]
   }
 
-  Y <- list(mean = crossprod(Gx$mean, Hz$mean))
+  Y <- list(mu = crossprod(Gx$mu, Hz$mu))
 
   prediction <- list(Gx = Gx, Gz = Gz, Hz = Hz, Y = Y)
 }

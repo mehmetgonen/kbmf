@@ -25,10 +25,10 @@ for(n in 1:Pz) {
 state <- kbmf_regression_train(Kx, Kz, Y, 5)
 prediction <- kbmf_regression_test(Kx, Kz, state)
 
-print(sprintf("RMSE = %.4f", sqrt(mean((prediction$Y$mean - Y)^2))))
+print(sprintf("RMSE = %.4f", sqrt(mean((prediction$Y$mu - Y)^2))))
 
 print("kernel weights on X")
-print(state$ex$mean)
+print(state$ex$mu)
 
 print("kernel weights on Z")
-print(state$ez$mean)
+print(state$ez$mu)

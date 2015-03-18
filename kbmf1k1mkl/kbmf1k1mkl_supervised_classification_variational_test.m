@@ -3,18 +3,18 @@
 function prediction = kbmf1k1mkl_supervised_classification_variational_test(Kx, Kz, state)
     Nz = size(Kz, 2);
     Pz = size(Kz, 3);
-    R = size(state.Ax.mean, 2);
+    R = size(state.Ax.mu, 2);
 
-    prediction.Gx.mean = state.Ax.mean' * Kx;
+    prediction.Gx.mu = state.Ax.mu' * Kx;
 
-    prediction.Gz.mean = zeros(R, Nz, Pz);
+    prediction.Gz.mu = zeros(R, Nz, Pz);
     for n = 1:Pz
-        prediction.Gz.mean(:, :, n) = state.Az.mean' * Kz(:, :, n);
+        prediction.Gz.mu(:, :, n) = state.Az.mu' * Kz(:, :, n);
     end
-    prediction.Hz.mean = zeros(R, Nz);
+    prediction.Hz.mu = zeros(R, Nz);
     for n = 1:Pz
-        prediction.Hz.mean = prediction.Hz.mean + state.ez.mean(n) * prediction.Gz.mean(:, :, n);
+        prediction.Hz.mu = prediction.Hz.mu + state.ez.mu(n) * prediction.Gz.mu(:, :, n);
     end
 
-    prediction.F.mean = prediction.Gx.mean' * prediction.Hz.mean;
+    prediction.F.mu = prediction.Gx.mu' * prediction.Hz.mu;
 end

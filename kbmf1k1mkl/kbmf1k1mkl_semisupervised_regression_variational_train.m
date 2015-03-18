@@ -10,29 +10,29 @@ function state = kbmf1k1mkl_semisupervised_regression_variational_train(Kx, Kz, 
     Nz = size(Kz, 2);
     Pz = size(Kz, 3);
     R = parameters.R;
-    sigmag = parameters.sigmag;
-    sigmah = parameters.sigmah;
-    sigmay = parameters.sigmay;
+    sigma_g = parameters.sigma_g;
+    sigma_h = parameters.sigma_h;
+    sigma_y = parameters.sigma_y;
 
-    Lambdax.shape = (parameters.alpha_lambda + 0.5) * ones(Dx, R);
-    Lambdax.scale = parameters.beta_lambda * ones(Dx, R);
-    Ax.mean = randn(Dx, R);
-    Ax.covariance = repmat(eye(Dx, Dx), [1, 1, R]);
-    Gx.mean = randn(R, Nx);
-    Gx.covariance = repmat(eye(R, R), [1, 1, Nx]);
+    Lambdax.alpha = (parameters.alpha_lambda + 0.5) * ones(Dx, R);
+    Lambdax.beta = parameters.beta_lambda * ones(Dx, R);
+    Ax.mu = randn(Dx, R);
+    Ax.sigma = repmat(eye(Dx, Dx), [1, 1, R]);
+    Gx.mu = randn(R, Nx);
+    Gx.sigma = repmat(eye(R, R), [1, 1, Nx]);
 
-    Lambdaz.shape = (parameters.alpha_lambda + 0.5) * ones(Dz, R);
-    Lambdaz.scale = parameters.beta_lambda * ones(Dz, R);
-    Az.mean = randn(Dz, R);
-    Az.covariance = repmat(eye(Dz, Dz), [1, 1, R]);
-    Gz.mean = randn(R, Nz, Pz);
-    Gz.covariance = repmat(eye(R, R), [1, 1, Pz]);
-    etaz.shape = (parameters.alpha_eta + 0.5) * ones(Pz, 1);
-    etaz.scale = parameters.beta_eta * ones(Pz, 1);
-    ez.mean = ones(Pz, 1);
-    ez.covariance = eye(Pz, Pz);
-    Hz.mean = randn(R, Nz);
-    Hz.covariance = repmat(eye(R, R), [1, 1, Nz]);
+    Lambdaz.alpha = (parameters.alpha_lambda + 0.5) * ones(Dz, R);
+    Lambdaz.beta = parameters.beta_lambda * ones(Dz, R);
+    Az.mu = randn(Dz, R);
+    Az.sigma = repmat(eye(Dz, Dz), [1, 1, R]);
+    Gz.mu = randn(R, Nz, Pz);
+    Gz.sigma = repmat(eye(R, R), [1, 1, Pz]);
+    etaz.alpha = (parameters.alpha_eta + 0.5) * ones(Pz, 1);
+    etaz.beta = parameters.beta_eta * ones(Pz, 1);
+    ez.mu = ones(Pz, 1);
+    ez.sigma = eye(Pz, Pz);
+    Hz.mu = randn(R, Nz);
+    Hz.sigma = repmat(eye(R, R), [1, 1, Nz]);
 
     KxKx = Kx * Kx';
 
@@ -54,58 +54,58 @@ function state = kbmf1k1mkl_semisupervised_regression_variational_train(Kx, Kz, 
         end
 
         %%%% update Lambdax
-        Lambdax.scale = 1 ./ (1 / parameters.beta_lambda + 0.5 * (Ax.mean.^2 + reshape(Ax.covariance(lambdax_indices), Dx, R)));
+        Lambdax.beta = 1 ./ (1 / parameters.beta_lambda + 0.5 * (Ax.mu.^2 + reshape(Ax.sigma(lambdax_indices), Dx, R)));
         %%%% update Ax
         for s = 1:R
-            Ax.covariance(:, :, s) = (diag(Lambdax.shape(:, s) .* Lambdax.scale(:, s)) + KxKx / sigmag^2) \ eye(Dx, Dx);
-            Ax.mean(:, s) = Ax.covariance(:, :, s) * (Kx * Gx.mean(s, :)' / sigmag^2);
+            Ax.sigma(:, :, s) = (diag(Lambdax.alpha(:, s) .* Lambdax.beta(:, s)) + KxKx / sigma_g^2) \ eye(Dx, Dx);
+            Ax.mu(:, s) = Ax.sigma(:, :, s) * (Kx * Gx.mu(s, :)' / sigma_g^2);
         end
         %%%% update Gx
         for i = 1:Nx
             indices = ~isnan(Y(i, :));
-            Gx.covariance(:, :, i) = (eye(R, R) / sigmag^2 + (Hz.mean(:, indices) * Hz.mean(:, indices)' + sum(Hz.covariance(:, :, indices), 3)) / sigmay^2) \ eye(R, R);
-            Gx.mean(:, i) = Gx.covariance(:, :, i) * (Ax.mean' * Kx(:, i) / sigmag^2 + Hz.mean(:, indices) * Y(i, indices)' / sigmay^2);
+            Gx.sigma(:, :, i) = (eye(R, R) / sigma_g^2 + (Hz.mu(:, indices) * Hz.mu(:, indices)' + sum(Hz.sigma(:, :, indices), 3)) / sigma_y^2) \ eye(R, R);
+            Gx.mu(:, i) = Gx.sigma(:, :, i) * (Ax.mu' * Kx(:, i) / sigma_g^2 + Hz.mu(:, indices) * Y(i, indices)' / sigma_y^2);
         end
         
         %%%% update Lambdaz
-        Lambdaz.scale = 1 ./ (1 / parameters.beta_lambda + 0.5 * (Az.mean.^2 + reshape(Az.covariance(lambdaz_indices), Dz, R)));
+        Lambdaz.beta = 1 ./ (1 / parameters.beta_lambda + 0.5 * (Az.mu.^2 + reshape(Az.sigma(lambdaz_indices), Dz, R)));
         %%%% update Az
         for s = 1:R
-            Az.covariance(:, :, s) = (diag(Lambdaz.shape(:, s) .* Lambdaz.scale(:, s)) + KzKz / sigmag^2) \ eye(Dz, Dz);
-            Az.mean(:, s) = Az.covariance(:, :, s) * (Kz * reshape(squeeze(Gz.mean(s, :, :)), Nz * Pz, 1) / sigmag^2);
+            Az.sigma(:, :, s) = (diag(Lambdaz.alpha(:, s) .* Lambdaz.beta(:, s)) + KzKz / sigma_g^2) \ eye(Dz, Dz);
+            Az.mu(:, s) = Az.sigma(:, :, s) * (Kz * reshape(squeeze(Gz.mu(s, :, :)), Nz * Pz, 1) / sigma_g^2);
         end
         %%%% update Gz
         for n = 1:Pz
-            Gz.covariance(:, :, n) = (eye(R, R) / sigmag^2 + (ez.mean(n) * ez.mean(n) + ez.covariance(n, n)) * eye(R, R) / sigmah^2) \ eye(R, R);
-            Gz.mean(:, :, n) = Az.mean' * Kz(:, (n - 1) * Nz + 1:n * Nz) / sigmag^2 + ez.mean(n) * Hz.mean / sigmah^2;
+            Gz.sigma(:, :, n) = (eye(R, R) / sigma_g^2 + (ez.mu(n) * ez.mu(n) + ez.sigma(n, n)) * eye(R, R) / sigma_h^2) \ eye(R, R);
+            Gz.mu(:, :, n) = Az.mu' * Kz(:, (n - 1) * Nz + 1:n * Nz) / sigma_g^2 + ez.mu(n) * Hz.mu / sigma_h^2;
             for p = [1:n - 1, n + 1:Pz]
-                Gz.mean(:, :, n) = Gz.mean(:, :, n) - (ez.mean(n) * ez.mean(p) + ez.covariance(n, p)) * Gz.mean(:, :, p) / sigmah^2;
+                Gz.mu(:, :, n) = Gz.mu(:, :, n) - (ez.mu(n) * ez.mu(p) + ez.sigma(n, p)) * Gz.mu(:, :, p) / sigma_h^2;
             end
-            Gz.mean(:, :, n) = Gz.covariance(:, :, n) * Gz.mean(:, :, n);
+            Gz.mu(:, :, n) = Gz.sigma(:, :, n) * Gz.mu(:, :, n);
         end
         %%%% update etaz
-        etaz.scale = 1 ./ (1 / parameters.beta_eta + 0.5 * (ez.mean.^2 + diag(ez.covariance)));
+        etaz.beta = 1 ./ (1 / parameters.beta_eta + 0.5 * (ez.mu.^2 + diag(ez.sigma)));
         %%%% update ez
-        ez.covariance = diag(etaz.shape .* etaz.scale);
+        ez.sigma = diag(etaz.alpha .* etaz.beta);
         for n = 1:Pz
             for p = 1:Pz
-                ez.covariance(n, p) = ez.covariance(n, p) + (sum(sum(Gz.mean(:, :, n) .* Gz.mean(:, :, p))) + (n == p) * Nz * sum(diag(Gz.covariance(:, :, n)))) / sigmah^2;
+                ez.sigma(n, p) = ez.sigma(n, p) + (sum(sum(Gz.mu(:, :, n) .* Gz.mu(:, :, p))) + (n == p) * Nz * sum(diag(Gz.sigma(:, :, n)))) / sigma_h^2;
             end
         end
-        ez.covariance = ez.covariance \ eye(Pz, Pz);
+        ez.sigma = ez.sigma \ eye(Pz, Pz);
         for n = 1:Pz
-            ez.mean(n) = sum(sum(Gz.mean(:, :, n) .* Hz.mean)) / sigmah^2;
+            ez.mu(n) = sum(sum(Gz.mu(:, :, n) .* Hz.mu)) / sigma_h^2;
         end
-        ez.mean = ez.covariance * ez.mean;
+        ez.mu = ez.sigma * ez.mu;
         %%%% update Hz
         for j = 1:Nz
             indices = ~isnan(Y(:, j));
-            Hz.covariance(:, :, j) = (eye(R, R) / sigmah^2 + (Gx.mean(:, indices) * Gx.mean(:, indices)' + sum(Gx.covariance(:, :, indices), 3)) / sigmay^2) \ eye(R, R);
-            Hz.mean(:, j) = Gx.mean(:, indices) * Y(indices, j) / sigmay^2;
+            Hz.sigma(:, :, j) = (eye(R, R) / sigma_h^2 + (Gx.mu(:, indices) * Gx.mu(:, indices)' + sum(Gx.sigma(:, :, indices), 3)) / sigma_y^2) \ eye(R, R);
+            Hz.mu(:, j) = Gx.mu(:, indices) * Y(indices, j) / sigma_y^2;
             for n = 1:Pz
-                Hz.mean(:, j) = Hz.mean(:, j) + ez.mean(n) * Gz.mean(:, j, n) / sigmah^2;
+                Hz.mu(:, j) = Hz.mu(:, j) + ez.mu(n) * Gz.mu(:, j, n) / sigma_h^2;
             end
-            Hz.mean(:, j) = Hz.covariance(:, :, j) * Hz.mean(:, j);
+            Hz.mu(:, j) = Hz.sigma(:, :, j) * Hz.mu(:, j);
         end
     end
 

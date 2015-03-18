@@ -21,9 +21,9 @@ function state = kbmf_classification_train(Kx, Kz, Y, R, varargin)
     parameters.progress = 1;
     parameters.R = R;
     parameters.seed = 1606;
-    parameters.sigmag = 0.1;
+    parameters.sigma_g = 0.1;
     if Px > 1 || Pz > 1
-        parameters.sigmah = 0.1;
+        parameters.sigma_h = 0.1;
     end
 
     if is_supervised == 1

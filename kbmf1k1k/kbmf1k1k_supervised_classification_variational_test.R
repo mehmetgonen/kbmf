@@ -1,11 +1,11 @@
 # Mehmet Gonen (mehmet.gonen@gmail.com)
 
 kbmf1k1k_supervised_classification_variational_test <- function(Kx, Kz, state) {
-  Gx <- list(mean = crossprod(state$Ax$mean, Kx))
+  Gx <- list(mu = crossprod(state$Ax$mu, Kx))
 
-  Gz <- list(mean = crossprod(state$Az$mean, Kz))
+  Gz <- list(mu = crossprod(state$Az$mu, Kz))
 
-  F <- list(mean = crossprod(Gx$mean, Gz$mean))
+  F <- list(mu = crossprod(Gx$mu, Gz$mu))
 
   prediction <- list(Gx = Gx, Gz = Gz, F = F)
 }
