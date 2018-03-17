@@ -1,5 +1,3 @@
-# Mehmet Gonen (mehmet.gonen@gmail.com)
-
 kbmf1mkl1k_supervised_regression_variational_test <- function(Kx, Kz, state) {
   Nx <- dim(Kx)[2]
   Px <- dim(Kx)[3]

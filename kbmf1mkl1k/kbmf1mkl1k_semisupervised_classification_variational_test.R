@@ -1,5 +1,3 @@
-# Mehmet Gonen (mehmet.gonen@gmail.com)
-
 kbmf1mkl1k_semisupervised_classification_variational_test <- function(Kx, Kz, state) {
   Nx <- dim(Kx)[2]
   Px <- dim(Kx)[3]

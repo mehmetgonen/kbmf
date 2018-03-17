@@ -1,5 +1,3 @@
-% Mehmet Gonen (mehmet.gonen@gmail.com)
-
 function prediction = kbmf1k1mkl_semisupervised_classification_variational_test(Kx, Kz, state)
     Nz = size(Kz, 2);
     Pz = size(Kz, 3);

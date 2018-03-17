@@ -1,5 +1,3 @@
-# Mehmet Gonen (mehmet.gonen@gmail.com)
-
 source_directory <- function(path) {
   files <- sort(dir(path, "\\.[rR]$", full.names = TRUE))
   lapply(files, source, chdir = TRUE)

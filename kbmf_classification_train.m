@@ -1,5 +1,3 @@
-% Mehmet Gonen (mehmet.gonen@gmail.com)
-
 function state = kbmf_classification_train(Kx, Kz, Y, R, varargin)
     directory = fileparts(mfilename('fullpath'));
     addpath([directory, '/kbmf1k1k']);
